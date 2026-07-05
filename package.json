@@ -1,0 +1,6 @@
+{
+  "name": "academia-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PWA Academia — treinos, progresso e estatísticas. Site estático, sem backend."
+}

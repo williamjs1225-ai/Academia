@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0d1420"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Academia"/>
+<title>Academia</title>
+
+<!-- PWA: manifest -->
+<link rel="manifest" href="manifest.json"/>
+
+<!-- Ícones -->
+<link rel="icon" href="assets/icons/icon-192.png"/>
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png"/>
+
+<!-- Estilos (separados de acordo com a estrutura solicitada) -->
+<link rel="stylesheet" href="css/style.css"/>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- WEBGL ANIMATED BACKGROUND -->
+<div id="bg-stars" aria-hidden="true"><div id="stars"></div><div id="stars2"></div><div id="stars3"></div></div>
+
+<!-- LOADING -->
+<div id="loading-screen" class="loading-screen">
+  <div class="loading-inner">
+    <div class="spinner">
+      <div></div><div></div><div></div>
+      <div></div><div></div><div></div>
+    </div>
+    <div class="loading-logo-text">ACADEMIA</div>
+    <div class="loading-tagline">Hipertrofia com ciência</div>
+  </div>
+</div>
+
+<!-- INSTALL BANNER -->
+<div id="install-banner" class="install-banner hidden">
+  <div class="install-banner__content">
+    <svg width="32" height="32" viewBox="0 0 52 52" fill="none"><rect width="52" height="52" rx="14" fill="rgba(232,238,255,0.1)"/><path d="M10 26h6M36 26h6M16 26v-5a2 2 0 012-2h16a2 2 0 012 2v5M16 26v5a2 2 0 002 2h16a2 2 0 002-2v-5M16 26h20" stroke="#e8eeff" stroke-width="2" stroke-linecap="round"/></svg>
+    <div><strong>Instalar Academia</strong><p>Adicione à tela inicial.</p></div>
+  </div>
+  <div class="install-banner__actions">
+    <button id="btn-install" class="btn btn--primary">Instalar</button>
+    <button id="btn-dismiss-install" class="btn">Agora não</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="app hidden">
+
+  <header class="app-header">
+    <div class="app-header__inner">
+      <div class="header-left">
+        <div class="greeting" id="greeting-text">Boa tarde, Atleta!</div>
+        <div class="subtitle" id="header-subtitle">Pronto para superar seus limites?</div>
+      </div>
+      <div class="header-right">
+        <button class="icon-btn" id="btn-notif"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg></button>
+        <button class="icon-btn" id="btn-profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+
+    <!-- HOME -->
+    <section id="view-home" class="view active">
+
+      <!-- XP Banner -->
+      <div class="glass-card glass-card--glow xp-banner">
+        <div class="xp-banner__left">
+          <div class="level-orb" id="xp-level-badge">1</div>
+          <div>
+            <div class="xp-label">Nível <span id="xp-level">1</span> · <span id="xp-title">Iniciante</span></div>
+            <div class="xp-bar-wrap"><div class="xp-bar-fill" id="xp-bar-fill"></div></div>
+            <div class="xp-nums"><span id="xp-cur">0</span> / <span id="xp-nxt">100</span> XP</div>
+          </div>
+        </div>
+        <div class="xp-streak">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span id="streak-count">0</span>d
+        </div>
+        <button class="card-info-btn" data-card="xp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
+      </div>
+
+      <!-- Stats -->
+      <div class="section-hdr">
+        <span class="section-title">Estatísticas</span>
+        <button class="card-info-btn" data-card="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card card-3d">
+          <div class="stat-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="4" height="10" rx="1"/><rect x="18" y="7" width="4" height="10" rx="1"/><path d="M6 12h12"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg></div>
+          <div class="stat-card__val" id="stat-workouts">0</div>
+          <div class="stat-card__label">Treinos</div>
+        </div>
+        <div class="stat-card card-3d">
+          <div class="stat-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+          <div class="stat-card__val" id="stat-volume">0kg</div>
+          <div class="stat-card__label">Volume</div>
+        </div>
+        <div class="stat-card card-3d">
+          <div class="stat-card__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9H4.5a2.5 2.5 0 010-5H6"/><path d="M18 9h1.5a2.5 2.5 0 000-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 006 6 6 6 0 006-6V2z"/></svg></div>
+          <div class="stat-card__val" id="stat-prs">0</div>
+          <div class="stat-card__label">PRs</div>
+        </div>
+      </div>
+
+      <!-- Treino de Hoje -->
+      <div class="section-hdr">
+        <span class="section-title">Treino de Hoje</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="section-badge" id="today-day-badge">—</span>
+          <button class="card-info-btn" data-card="treino-hoje"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
+          <button class="btn" id="btn-edit-schedule" style="padding:5px 12px;font-size:11px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Editar
+          </button>
+        </div>
+      </div>
+      <div id="today-workout-card"></div>
+
+      <!-- Semana -->
+      <div class="section-hdr" style="margin-top:var(--sp-md)">
+        <span class="section-title">Semana</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="section-badge" id="week-badge">0/5</span>
+          <button class="card-info-btn" data-card="semana"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
+        </div>
+      </div>
+      <div class="glass-card week-strip" id="week-strip"></div>
+
+      <!-- Volume Chart -->
+      <div class="section-hdr">
+        <span class="section-title">Volume Semanal</span>
+        <button class="card-info-btn" data-card="volume"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
+      </div>
+      <div id="volume-card-root"></div>
+
+      <!-- Workout Cards -->
+      <div class="section-hdr">
+        <span class="section-title">Seus Treinos</span>
+        <button class="card-info-btn" data-card="treinos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
+      </div>
+      <div class="workout-scroll" id="home-wcard-list"></div>
+
+      <!-- Achievements -->
+      <div class="section-hdr">
+        <span class="section-title">Conquistas</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button class="card-info-btn" data-card="conquistas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
+          <span class="section-link" id="btn-see-all-ach">Ver todas →</span>
+        </div>
+      </div>
+      <div class="ach-scroll" id="home-ach-row"></div>
+
+    </section>
+
+    <!-- TREINOS -->
+    <section id="view-workouts" class="view">
+      <div class="view-top-bar">
+        <h1 class="view-title">Treinos</h1>
+        <button class="btn" id="btn-expand-all">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          Expandir
+        </button>
+      </div>
+      <div id="workout-list"></div>
+    </section>
+
+    <!-- INICIAR -->
+    <section id="view-start" class="view">
+
+      <div id="pre-start">
+        <div class="view-top-bar"><h1 class="view-title">Iniciar</h1></div>
+        <p style="font-size:var(--fs-sm);color:var(--c-text-2);margin-bottom:var(--sp-md)">Selecione o treino de hoje:</p>
+        <div id="start-picker"></div>
+        <div class="glass-card qs-card hidden" id="qs-card">
+          <div><div class="qs-lbl">Repetir último</div><div class="qs-name" id="qs-name">—</div></div>
+          <button class="btn btn--primary" id="btn-quick-start">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Iniciar
+          </button>
+        </div>
+      </div>
+
+      <!-- Workout detail preview -->
+      <div id="workout-detail-screen" class="hidden">
+        <div class="active-hdr">
+          <button class="icon-btn" id="btn-back-from-detail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <div class="active-hdr__info">
+            <div class="active-workout-name" id="detail-workout-name">—</div>
+            <div class="active-timer-disp">Prévia do treino</div>
+          </div>
+          <button class="btn btn--primary" id="btn-begin-workout">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Iniciar Treino
+          </button>
+        </div>
+        <div id="detail-exercise-preview"></div>
+      </div>
+
+      <!-- Active workout -->
+      <div id="active-workout-screen" class="hidden">
+        <div class="active-hdr">
+          <button class="icon-btn" id="btn-cancel-workout"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+          <div class="active-hdr__info">
+            <div class="active-workout-name" id="active-workout-name">—</div>
+          </div>
+          <div class="active-hdr__actions">
+            <div class="finish-group">
+              <span class="active-timer-disp" id="active-timer">00:00</span>
+              <button class="btn btn--primary" id="btn-finish-workout">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Finalizar
+              </button>
+            </div>
+            <div class="rest-float">
+              <button class="rest-float__btn" id="rest-float-btn" type="button">
+                <span class="rest-float__ring" id="rest-float-ring"></span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </button>
+              <div class="rest-float__panel hidden" id="rest-float-panel">
+                <div class="rest-float__panel-top">
+                  <div class="rest-float__title">Descanso</div>
+                  <button class="icon-btn" id="btn-rest-close" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+                </div>
+                <div class="rest-display" id="rest-display">00:00</div>
+                <div class="rest-shortcuts">
+                  <button class="sc-btn" data-s="45">45s</button>
+                  <button class="sc-btn" data-s="60">60s</button>
+                  <button class="sc-btn" data-s="90">90s</button>
+                  <button class="sc-btn" data-s="120">2min</button>
+                </div>
+                <div class="rest-controls">
+                  <button class="icon-btn icon-btn--lg" id="btn-rest-reset" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg></button>
+                  <button class="btn btn--primary rest-play-btn" id="btn-rest-toggle" type="button">
+                    <svg id="rest-play-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    <svg id="rest-pause-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16" class="hidden"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                    <span id="rest-btn-lbl">Play</span>
+                  </button>
+                </div>
+            <div class="rest-controls" style="margin-top:8px">
+              <button class="btn" id="btn-rest-skip" type="button" style="flex:1;justify-content:center">Pular</button>
+            </div>
+            <div class="rest-alert hidden" id="rest-alert">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="20 6 9 17 4 12"/></svg>
+              Descanso concluído! Próxima série.
+            </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-track" id="progress-track"></div>
+          <span class="progress-lbl" id="progress-lbl">0 / 0</span>
+        </div>
+        <div id="active-exercises"></div>
+        <div class="glass-card session-meta">
+          <div class="meta-title">Métricas da Sessão</div>
+          <div class="meta-row"><label class="meta-lbl">RPE (1–10) *</label><div class="rpe-btns" id="rpe-selector"></div></div>
+          <div class="meta-row"><label class="meta-lbl">Sono (horas) *</label><input type="number" id="sleep-input" class="ppl-input" min="1" max="24" step="0.5" placeholder="ex: 7.5" inputmode="decimal" style="width:100%"/></div>
+          <div class="meta-row"><label class="meta-lbl">Anotações *</label><textarea id="session-notes" class="ppl-input meta-textarea" placeholder="Como foi? Dores, sensações..."></textarea></div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- HISTÓRICO -->
+    <section id="view-history" class="view">
+      <div class="view-top-bar">
+        <h1 class="view-title">Histórico</h1>
+        <div style="display:flex;gap:var(--sp-sm);align-items:center">
+          <button class="card-info-btn" data-card="historico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
+          <button class="btn" id="btn-export"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export</button>
+          <button class="btn" id="btn-import"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import</button>
+          <button class="btn btn--danger" id="btn-reset-history" style="padding:7px 12px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+            Limpar
+          </button>
+          <input type="file" id="import-file" accept=".json" class="hidden"/>
+        </div>
+      </div>
+      <div class="filter-tabs">
+        <button class="ftab active" data-f="all">Todos</button>
+        <button class="ftab" data-f="Push">Push</button>
+        <button class="ftab" data-f="Legs">Legs</button>
+        <button class="ftab" data-f="Pull">Pull</button>
+      </div>
+      <div id="history-list"></div>
+    </section>
+
+    <!-- MAIS -->
+    <section id="view-more" class="view">
+      <div class="view-top-bar"><h1 class="view-title">Mais</h1></div>
+      <div class="sub-tabs">
+        <button class="stab active" data-tab="bio">Biometria</button>
+        <button class="stab" data-tab="notes">Notas</button>
+        <button class="stab" data-tab="ach">Conquistas</button>
+        <button class="stab" data-tab="compare">Comparar</button>
+      </div>
+
+      <div class="subtab-panel active" id="panel-bio">
+        <div class="glass-card" style="margin-bottom:var(--sp-md)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-md)">
+            <div class="card-title">Peso Corporal</div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <button class="card-info-btn" id="btn-edit-meta-weight" title="Editar metas de peso">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <button class="card-info-btn" id="btn-clear-weights" title="Apagar histórico de peso corporal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m5 0V4a1 1 0 011-1h2a1 1 0 011 1v2"/></svg>
+              </button>
+              <button class="card-info-btn" data-card="biometria"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
+            </div>
+          </div>
+          <div class="weight-row">
+            <input type="number" id="weight-inp" class="ppl-input" placeholder="kg (ex: 80.5)" step="0.1" inputmode="decimal" style="flex:1"/>
+            <button class="btn btn--primary" id="btn-add-weight">+ Registrar</button>
+          </div>
+          <canvas id="weight-chart" height="150"></canvas>
+          <div id="weight-goals-list"></div>
+        </div>
+        <div class="glass-card">
+          <div class="card-title">Fotos de Progresso</div>
+          <label class="photo-upload">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="20" height="20"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Adicionar Foto
+            <input type="file" id="photo-input" accept="image/*" class="hidden"/>
+          </label>
+          <div class="photos-grid" id="photos-grid"></div>
+        </div>
+      </div>
+
+      <div class="subtab-panel" id="panel-notes">
+        <div class="glass-card" style="margin-bottom:var(--sp-md)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-md)">
+            <div class="card-title">Nova Anotação</div>
+            <button class="card-info-btn" data-card="notas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
+          </div>
+          <textarea id="free-note" class="ppl-input meta-textarea" placeholder="Sensações, dores, observações..."></textarea>
+          <button class="btn btn--primary" style="width:100%;margin-top:var(--sp-sm);justify-content:center" id="btn-save-note">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Salvar Anotação
+          </button>
+        </div>
+        <div id="notes-list"></div>
+      </div>
+
+      <div class="subtab-panel" id="panel-ach">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--sp-md)">
+          <span style="font-size:var(--fs-sm);color:var(--c-text-2)">Desbloqueie conquistas treinando!</span>
+          <button class="card-info-btn" data-card="conquistas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
+        </div>
+        <div id="all-ach-list"></div>
+      </div>
+
+      <div class="subtab-panel" id="panel-compare">
+        <div class="glass-card">
+          <div class="card-title" style="margin-bottom:var(--sp-md)">Comparação Mensal</div>
+          <div id="month-compare-body"></div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" data-view="home"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Início</span></button>
+    <button class="nav-item" data-view="workouts"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="4" height="10" rx="1"/><rect x="18" y="7" width="4" height="10" rx="1"/><path d="M6 12h12"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg><span>Treinos</span></button>
+    <button class="nav-item nav-item--center" data-view="start"><div class="nav-center-btn"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><span>Iniciar</span></button>
+    <button class="nav-item" data-view="history"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Histórico</span></button>
+    <button class="nav-item" data-view="more"><svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg><span>Mais</span></button>
+  </nav>
+
+</div>
+
+<!-- MODALS -->
+
+<!-- Edit Workout -->
+<div id="modal-edit" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title" id="edit-modal-title">Editar Treino</div><button class="icon-btn" id="btn-close-edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div id="edit-modal-body"></div>
+    <div class="modal-ftr">
+      <button class="btn" id="btn-add-ex">+ Exercício</button>
+      <button class="btn btn--primary" id="btn-save-edit" style="margin-left:auto">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Exercise -->
+<div id="modal-add-ex" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title">Novo Exercício</div><button class="icon-btn" id="btn-close-add-ex"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div id="modal-add-ex-body"></div>
+    <div class="modal-ftr">
+      <button class="btn" id="btn-close-add-ex2" onclick="document.getElementById('modal-add-ex').classList.add('hidden')">Cancelar</button>
+      <button class="btn btn--primary" id="btn-confirm-add-ex" style="margin-left:auto">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Tip -->
+<div id="modal-tip" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title" id="tip-title">Dica</div><button class="icon-btn" id="btn-close-tip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="tip-body" id="tip-body"></div>
+  </div>
+</div>
+
+<!-- Cancel Workout Confirmation -->
+<div id="modal-cancel-confirm" class="modal-overlay hidden">
+  <div class="modal cancel-modal">
+    <div class="cancel-modal__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+    <div class="cancel-modal__title">Encerrar Treino?</div>
+    <div class="cancel-modal__text">Você realmente deseja encerrar este treino? Ele não será contabilizado no progresso da semana.</div>
+    <div class="cancel-modal__btns">
+      <button class="btn-neon btn-neon--red" id="btn-confirm-cancel">Sim, encerrar treino</button>
+      <button class="btn-neon btn-neon--green" id="btn-deny-cancel">Não, continuar treino</button>
+    </div>
+  </div>
+</div>
+
+<!-- Generic delete confirmation — reused for deleting a single exercise
+     and for deleting an entire workout, so an accidental tap can never
+     silently wipe out data with no way back. -->
+<div id="modal-delete-confirm" class="modal-overlay hidden">
+  <div class="modal cancel-modal">
+    <div class="cancel-modal__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></div>
+    <div class="cancel-modal__title">Apagar?</div>
+    <div class="cancel-modal__text" id="delete-confirm-text">Tem certeza que deseja apagar este item? Esta ação não pode ser desfeita.</div>
+    <div class="cancel-modal__btns">
+      <button class="btn-neon btn-neon--red" id="btn-confirm-delete">Sim, apagar</button>
+      <button class="btn-neon btn-neon--green" id="btn-deny-delete">Não, manter</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirmação antes de finalizar o treino -->
+<div id="modal-finish-confirm" class="modal-overlay hidden">
+  <div class="modal cancel-modal">
+    <div class="cancel-modal__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="40" height="40"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <div class="cancel-modal__title">Finalizar Treino?</div>
+    <div class="cancel-modal__text" id="finish-confirm-text">Tem certeza que deseja finalizar o treino agora?</div>
+    <div class="cancel-modal__btns">
+      <button class="btn-neon btn-neon--green" id="btn-confirm-finish">Sim, finalizar</button>
+      <button class="btn-neon btn-neon--red" id="btn-deny-finish">Não, continuar treino</button>
+    </div>
+  </div>
+</div>
+
+<!-- Finish -->
+<div id="modal-finish" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title">🎉 Treino Concluído!</div></div>
+    <div class="finish-grid" id="finish-body"></div>
+    <div class="modal-ftr"><button class="btn btn--primary" id="btn-close-finish" style="width:100%;justify-content:center">Fechar</button></div>
+  </div>
+</div>
+
+<!-- Achievement -->
+<div id="modal-ach" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="ach-popup">
+      <div class="ach-popup__icon" id="ach-popup-icon"></div>
+      <div class="ach-popup__title">Conquista Desbloqueada!</div>
+      <div class="ach-popup__name" id="ach-popup-name">—</div>
+      <div class="ach-popup__desc" id="ach-popup-desc">—</div>
+    </div>
+    <button class="btn btn--primary" id="btn-close-ach" style="width:100%;justify-content:center;margin-top:var(--sp-md)">Incrível! ⚡</button>
+  </div>
+</div>
+
+<!-- History Detail -->
+<div id="modal-hist" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title" id="hist-modal-title">Sessão</div><button class="icon-btn" id="btn-close-hist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div id="hist-modal-body"></div>
+  </div>
+</div>
+
+<!-- Card Info -->
+<div id="modal-card-info" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title" id="card-info-title">Informação</div><button class="icon-btn" id="btn-close-card-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div class="tip-body" id="card-info-body"></div>
+  </div>
+</div>
+
+<!-- Schedule Editor -->
+<div id="modal-schedule" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title">Editar Programação</div><button class="icon-btn" id="btn-close-schedule"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div id="schedule-editor-body"></div>
+    <div class="modal-ftr"><button class="btn btn--primary" id="btn-save-schedule" style="width:100%;justify-content:center">Salvar Programação</button></div>
+  </div>
+</div>
+
+<!-- Editor de Metas (Volume Semanal por grupo muscular + Metas de Peso Corporal) -->
+<div id="modal-meta-vol" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-title">Editor de Metas</div><button class="icon-btn" id="btn-close-meta-vol"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+    <div id="meta-vol-body"></div>
+    <div class="modal-ftr"><button class="btn btn--primary" id="btn-save-meta-vol" style="width:100%;justify-content:center">Salvar Metas</button></div>
+  </div>
+</div>
+
+
+<!-- Script principal do app -->
+<script src="js/app.js"></script>
+
+</body>
+</html>
